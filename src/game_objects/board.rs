@@ -1,7 +1,6 @@
+use crate::game_objects::piece::Color;
 use crate::game_objects::piece::{ChessPiece, Player};
-
-use super::piece::Color;
-use super::playing::{Move, PlayingError};
+use crate::game_objects::playing::{Move, PlayingError};
 
 /// The default size of the board. A typical game has a 15 by 15 board.
 pub(super) const BOARD_SIZE: usize = 15;

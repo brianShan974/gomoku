@@ -1,6 +1,7 @@
 use super::{board::Pos, piece::Player};
 
-pub(super) struct Move {
+#[derive(Debug, Clone)]
+pub(crate) struct Move {
     player: Player,
     pos: Pos,
 }

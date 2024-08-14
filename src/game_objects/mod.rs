@@ -1,4 +1,4 @@
-mod board;
-mod piece;
+pub mod board;
+pub mod piece;
 
-mod playing;
+pub mod playing;

@@ -1,5 +1,11 @@
-mod game_objects;
+#![feature(addr_parse_ascii)]
 
-fn main() {
-    println!("Hello, world!");
+use iced::{Application, Settings};
+
+use crate::gui::app::Gomoku;
+mod game_objects;
+mod gui;
+
+fn main() -> Result<(), iced::Error> {
+    Gomoku::run(Settings::default())
 }

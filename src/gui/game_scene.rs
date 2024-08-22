@@ -2,13 +2,13 @@ use iced::Element;
 
 use crate::{
     game_objects::playing::Move,
-    gui::app::{AppCommand, ElementType, GUIMessage},
+    gui::app::{AppCommand, AppElement, AppMessage},
 };
 
 pub const LAYOUT: (f32, f32, f32) = (0.375, 1.0, 0.375);
 
 #[derive(Debug, Clone)]
-pub enum GomokuMessage {
+pub enum GameMessage {
     Pause,
     Resume,
     Play(Move),
@@ -18,17 +18,17 @@ pub enum GomokuMessage {
 pub struct GameScene {}
 
 impl GameScene {
-    pub fn view(&self) -> ElementType<'_> {
+    pub fn view(&self) -> AppElement<'_> {
         unimplemented!()
     }
 
-    pub fn update(&mut self, message: GomokuMessage) -> AppCommand {
+    pub fn update(&mut self, message: GameMessage) -> AppCommand {
         unimplemented!()
     }
 }
 
-impl From<GomokuMessage> for GUIMessage {
-    fn from(value: GomokuMessage) -> Self {
+impl From<GameMessage> for AppMessage {
+    fn from(value: GameMessage) -> Self {
         Self::Game(value)
     }
 }

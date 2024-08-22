@@ -3,7 +3,7 @@ use iced::{
     Command,
 };
 
-use crate::gui::app::{AppCommand, ElementType, GUIMessage};
+use crate::gui::app::{AppCommand, AppElement, AppMessage};
 
 #[derive(Debug, Default)]
 pub struct RoleSelectionScene;
@@ -21,14 +21,14 @@ pub enum Role {
 }
 
 impl RoleSelectionScene {
-    pub fn view(&self) -> ElementType<'_> {
+    pub fn view(&self) -> AppElement<'_> {
         let user_hint = Text::new("Please select whether you want to be the client or the server:");
 
         let server_button = button("SERVER").on_press(RoleSelectionMessage::ChooseServer.into());
         let client_button = button("CLIENT").on_press(RoleSelectionMessage::ChooseClient.into());
         let buttons = row!(server_button, client_button);
 
-        let exit_button = button("EXIT").on_press(GUIMessage::Exit);
+        let exit_button = button("EXIT").on_press(AppMessage::Exit);
 
         column!(user_hint, buttons, exit_button).into()
     }
@@ -38,7 +38,7 @@ impl RoleSelectionScene {
     }
 }
 
-impl From<RoleSelectionMessage> for GUIMessage {
+impl From<RoleSelectionMessage> for AppMessage {
     fn from(value: RoleSelectionMessage) -> Self {
         Self::SelectRole(value)
     }

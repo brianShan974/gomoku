@@ -1,6 +1,6 @@
 use iced::Command;
 
-use crate::gui::app::{AppCommand, ElementType, GUIMessage};
+use crate::gui::app::{AppCommand, AppElement, AppMessage};
 
 #[derive(Debug, Clone)]
 pub enum MenuMessage {}
@@ -9,7 +9,7 @@ pub enum MenuMessage {}
 pub struct MenuScene {}
 
 impl MenuScene {
-    pub fn view(&self) -> ElementType<'_> {
+    pub fn view(&self) -> AppElement<'_> {
         unimplemented!()
     }
 
@@ -18,7 +18,7 @@ impl MenuScene {
     }
 }
 
-impl From<MenuMessage> for GUIMessage {
+impl From<MenuMessage> for AppMessage {
     fn from(value: MenuMessage) -> Self {
         Self::Menu(value)
     }

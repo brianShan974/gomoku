@@ -1,20 +1,17 @@
-use iced::widget::{
-    button, column, row,
-    text_editor::{Content, Edit},
-    Text,
-};
 use iced::{widget::text_editor, widget::text_editor::Action};
+use iced::{
+    widget::{
+        button, column, row,
+        text_editor::{Content, Edit},
+        Text,
+    },
+    Command,
+};
 
 use std::net::SocketAddr;
 
 use crate::gui::app::{ElementType, GUIMessage};
-
-#[derive(Debug, Clone)]
-pub enum StartingMessage {
-    Edit(Action),
-    Connect,
-    Return,
-}
+use crate::gui::starting_scenes::starting_scene::StartingMessage;
 
 #[derive(Debug, Default)]
 enum ClientStartingSceneState {
@@ -45,28 +42,32 @@ impl ClientStartingScene {
         };
 
         let editor = text_editor(&self.input_content)
-            .on_action(|action| GUIMessage::Start(StartingMessage::Edit(action)));
+            .on_action(|action| StartingMessage::Edit(action).into());
 
-        let connect_button =
-            button("CONNECT").on_press(GUIMessage::Start(StartingMessage::Connect));
+        let connect_button = button("CONNECT").on_press(StartingMessage::Connect.into());
         let exit_button = button("EXIT").on_press(GUIMessage::Exit);
-        let return_button = button("GO BACK").on_press(GUIMessage::Start(StartingMessage::Return));
+        let return_button = button("GO BACK").on_press(StartingMessage::Return.into());
 
         let buttons = row!(connect_button, exit_button, return_button);
 
         column!(user_hint, editor, buttons).into()
     }
 
-    pub fn update(&mut self, message: GUIMessage) {
-        if let GUIMessage::Start(StartingMessage::Edit(action)) = message {
+    pub fn update(&mut self, message: StartingMessage) -> Command<StartingMessage> {
+        if let StartingMessage::Edit(action) = message {
             self.input_content.perform(action.clone());
             if let Action::Edit(Edit::Enter) = action {
                 match SocketAddr::parse_ascii(self.input_content.text().as_bytes()) {
-                    Ok(addr) => self.addr = Some(addr),
-                    Err(_) => self.state = ClientStartingSceneState::Error,
+                    Ok(addr) => {
+                        self.addr = Some(addr);
+                    }
+                    Err(_) => {
+                        self.state = ClientStartingSceneState::Error;
+                    }
                 }
             }
         }
+        Command::none()
     }
 
     pub fn get_addr(&self) -> Option<SocketAddr> {

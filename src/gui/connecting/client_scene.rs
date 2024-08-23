@@ -10,12 +10,13 @@ use iced::{
 use std::net::SocketAddr;
 
 use crate::gui::{
-    app::{AppElement, AppMessage},
+    app::{AppCommand, AppElement, AppMessage},
     connecting::message::ConnectingMessage,
+    scene::Scene,
 };
 
 #[derive(Debug, Default)]
-enum ClientStartingSceneState {
+enum ClientConnectingSceneState {
     #[default]
     Default,
     Error,
@@ -25,18 +26,24 @@ enum ClientStartingSceneState {
 pub struct ClientConnectingScene {
     input_content: Content,
     addr: Option<SocketAddr>,
-    state: ClientStartingSceneState,
+    state: ClientConnectingSceneState,
 }
 
 impl ClientConnectingScene {
-    pub fn view(&self) -> AppElement<'_> {
+    pub fn get_addr(&self) -> Option<SocketAddr> {
+        self.addr
+    }
+}
+
+impl Scene for ClientConnectingScene {
+    fn view(&self) -> AppElement<'_> {
         let user_hint = match self.state {
-            ClientStartingSceneState::Default => column!(
+            ClientConnectingSceneState::Default => column!(
                 Text::new("Please enter a valid IP address and a port."),
                 Text::new(r#"If it is an IPv4 address, please format it as "<ip>:<port>"."#),
                 Text::new(r#"If it is an IPv6 address, please format it as "[<ip>]:<port>"."#),
             ),
-            ClientStartingSceneState::Error => column!(
+            ClientConnectingSceneState::Error => column!(
                 Text::new("Your IP address and port are in an incorrect format."),
                 Text::new("Please enter a correct one:"),
             ),
@@ -54,24 +61,20 @@ impl ClientConnectingScene {
         column!(user_hint, editor, buttons).into()
     }
 
-    pub fn update(&mut self, message: ConnectingMessage) -> Command<ConnectingMessage> {
-        if let ConnectingMessage::Edit(action) = message {
+    fn update(&mut self, message: AppMessage) -> AppCommand {
+        if let AppMessage::Connecting(ConnectingMessage::Edit(action)) = message {
             if let Action::Edit(Edit::Enter) = action {
                 match SocketAddr::parse_ascii(self.input_content.text().as_bytes()) {
                     Ok(addr) => {
                         self.addr = Some(addr);
                     }
                     Err(_) => {
-                        self.state = ClientStartingSceneState::Error;
+                        self.state = ClientConnectingSceneState::Error;
                     }
                 }
             }
             self.input_content.perform(action.clone());
         }
         Command::none()
-    }
-
-    pub fn get_addr(&self) -> Option<SocketAddr> {
-        self.addr
     }
 }

@@ -1,18 +1,16 @@
-use crate::gui::{
-    connecting::scene::ConnectingScene, game::scene::GameScene, menu::scene::MenuScene,
-    role_selection::scene::RoleSelectionScene,
-};
+use crate::gui::app::{AppCommand, AppElement, AppMessage};
 
-#[derive(Debug)]
-pub enum Scene {
-    Start(ConnectingScene),
-    Game(GameScene),
-    Paused(MenuScene),
-    RoleSelection(RoleSelectionScene),
+#[derive(Debug, Default)]
+pub enum CurrentScene {
+    Start,
+    Game,
+    Paused,
+    #[default]
+    RoleSelection,
 }
 
-impl Default for Scene {
-    fn default() -> Self {
-        Self::RoleSelection(RoleSelectionScene)
-    }
+pub trait Scene {
+    fn view(&self) -> AppElement<'_>;
+
+    fn update(&mut self, message: AppMessage) -> AppCommand;
 }

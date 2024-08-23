@@ -1,16 +1,20 @@
 use iced::Command;
 
-use crate::gui::{app::AppElement, connecting::message::ConnectingMessage};
+use crate::gui::{
+    app::{AppCommand, AppElement, AppMessage},
+    connecting::message::ConnectingMessage,
+    scene::Scene,
+};
 
 #[derive(Debug, Default)]
 pub struct ServerConnectingScene;
 
-impl ServerConnectingScene {
-    pub fn view(&self) -> AppElement<'_> {
+impl Scene for ServerConnectingScene {
+    fn view(&self) -> AppElement<'_> {
         unimplemented!()
     }
 
-    pub fn update(&mut self, message: ConnectingMessage) -> Command<ConnectingMessage> {
+    fn update(&mut self, message: AppMessage) -> AppCommand {
         unimplemented!()
     }
 }

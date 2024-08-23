@@ -1,9 +1,9 @@
-use iced::{
-    widget::{button, row},
-    Command,
-};
+use iced::widget::{button, row};
 
-use crate::gui::app::{AppCommand, AppElement, AppMessage};
+use crate::gui::{
+    app::{AppCommand, AppElement, AppMessage},
+    scene::Scene,
+};
 
 #[derive(Debug, Clone)]
 pub enum MenuMessage {
@@ -14,15 +14,15 @@ pub enum MenuMessage {
 #[derive(Debug)]
 pub struct MenuScene {}
 
-impl MenuScene {
-    pub fn view(&self) -> AppElement<'_> {
+impl Scene for MenuScene {
+    fn view(&self) -> AppElement<'_> {
         let resign_button = button("RESIGN").on_press(MenuMessage::Resign.into());
         let undo_button = button("UNDO").on_press(MenuMessage::Undo.into());
 
         row!(resign_button, undo_button).into()
     }
 
-    pub fn update(&mut self, message: MenuMessage) -> AppCommand {
+    fn update(&mut self, message: AppMessage) -> AppCommand {
         unimplemented!()
     }
 }

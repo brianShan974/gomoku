@@ -1,6 +1,6 @@
 use iced::widget::text_editor::Action;
 
-use crate::gui::app::AppMessage;
+use crate::gui::app_message::AppMessage;
 
 #[derive(Debug, Clone)]
 pub enum ConnectingMessage {

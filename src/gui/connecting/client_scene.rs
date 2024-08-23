@@ -10,7 +10,8 @@ use iced::{
 use std::net::SocketAddr;
 
 use crate::gui::{
-    app::{AppCommand, AppElement, AppMessage},
+    app::{AppCommand, AppElement},
+    app_message::AppMessage,
     connecting::message::ConnectingMessage,
     scene::Scene,
 };

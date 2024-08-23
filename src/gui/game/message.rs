@@ -1,4 +1,4 @@
-use crate::{game_objects::playing::Move, gui::app::AppMessage};
+use crate::{game_objects::playing::Move, gui::app_message::AppMessage};
 
 #[derive(Debug, Clone)]
 pub enum GameMessage {

@@ -1,10 +1,14 @@
-use crate::gui::app::{AppCommand, AppElement, AppMessage};
+use crate::gui::{
+    app::{AppCommand, AppElement},
+    app_message::AppMessage,
+    role_selection::scene::Role,
+};
 
 #[derive(Debug, Default)]
 pub enum CurrentScene {
-    Start,
+    Connecting(Role),
     Game,
-    Paused,
+    Menu,
     #[default]
     RoleSelection,
 }

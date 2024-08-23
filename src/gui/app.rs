@@ -6,31 +6,24 @@ use iced::{
 };
 
 use crate::gui::{
-    connecting::{message::ConnectingMessage, scene::ConnectingScene},
-    connection_state::ConnectionState,
-    game::message::GameMessage,
-    menu::scene::MenuMessage,
-    role_selection::scene::{Role, RoleSelectionMessage},
+    app_message::AppMessage,
+    connecting::{
+        client_scene::ClientConnectingScene, message::ConnectingMessage, scene::ConnectingScene,
+        server_scene::ServerConnectingScene,
+    },
+    game::{message::GameMessage, scene::GameScene},
+    menu::scene::{MenuMessage, MenuScene},
+    role_selection::scene::{Role, RoleSelectionMessage, RoleSelectionScene},
     scene::{CurrentScene, Scene},
 };
 
 pub type AppElement<'a> = Element<'a, AppMessage, Theme, Renderer>;
 pub type AppCommand = Command<AppMessage>;
 
-#[derive(Debug, Clone)]
-pub enum AppMessage {
-    SelectRole(RoleSelectionMessage),
-    Connecting(ConnectingMessage),
-    Game(GameMessage),
-    Menu(MenuMessage),
-    // Nothing,
-    Exit,
-}
-
 #[derive(Debug, Default)]
 pub struct Gomoku {
     current_scene: CurrentScene,
-    role: Role,
+    role: Option<Role>,
 }
 
 impl Application for Gomoku {
@@ -71,6 +64,32 @@ impl Application for Gomoku {
 
 impl Gomoku {
     fn construct_scene(&self) -> Box<dyn Scene> {
+        match self.current_scene {
+            CurrentScene::RoleSelection => self.construct_role_selection_scene(),
+            CurrentScene::Connecting(Role::Client) => self.construct_client_connecting_scene(),
+            CurrentScene::Connecting(Role::Server) => self.construct_server_connecting_scene(),
+            CurrentScene::Game => self.construct_game_scene(),
+            CurrentScene::Menu => self.construct_menu_scene(),
+        }
+    }
+
+    fn construct_role_selection_scene(&self) -> Box<RoleSelectionScene> {
+        Box::new(RoleSelectionScene)
+    }
+
+    fn construct_client_connecting_scene(&self) -> Box<ClientConnectingScene> {
+        unimplemented!()
+    }
+
+    fn construct_server_connecting_scene(&self) -> Box<ServerConnectingScene> {
+        unimplemented!()
+    }
+
+    fn construct_game_scene(&self) -> Box<GameScene> {
+        unimplemented!()
+    }
+
+    fn construct_menu_scene(&self) -> Box<MenuScene> {
         unimplemented!()
     }
 
@@ -79,8 +98,8 @@ impl Gomoku {
         message: RoleSelectionMessage,
     ) -> Command<AppMessage> {
         self.role = match message {
-            RoleSelectionMessage::ChooseClient => Role::Client,
-            RoleSelectionMessage::ChooseServer => Role::Server,
+            RoleSelectionMessage::ChooseClient => Some(Role::Client),
+            RoleSelectionMessage::ChooseServer => Some(Role::Server),
         };
         Command::none()
     }

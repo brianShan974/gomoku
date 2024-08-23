@@ -1,5 +1,6 @@
 use crate::gui::{
-    app::{AppCommand, AppElement, AppMessage},
+    app::{AppCommand, AppElement},
+    app_message::AppMessage,
     scene::Scene,
 };
 

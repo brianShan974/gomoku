@@ -1,8 +1,8 @@
 use iced::Command;
 
 use crate::gui::{
-    app::{AppCommand, AppElement, AppMessage},
-    connecting::message::ConnectingMessage,
+    app::{AppCommand, AppElement},
+    app_message::AppMessage,
     scene::Scene,
 };
 

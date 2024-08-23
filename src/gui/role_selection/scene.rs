@@ -14,8 +14,9 @@ pub enum RoleSelectionMessage {
     ChooseServer,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub enum Role {
+    #[default]
     Client,
     Server,
 }

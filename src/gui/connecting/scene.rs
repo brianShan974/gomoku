@@ -1,10 +1,10 @@
-use iced::{widget::text_editor::Action, Command};
+use iced::Command;
 
 use crate::gui::{
     app::{AppCommand, AppMessage},
-    connecting_scenes::{
-        client_connecting_scene::ClientConnectingScene,
-        server_connecting_scene::ServerConnectingScene,
+    connecting::{
+        client_scene::ClientConnectingScene, message::ConnectingMessage,
+        server_scene::ServerConnectingScene,
     },
 };
 
@@ -12,13 +12,6 @@ use crate::gui::{
 pub enum ConnectingScene {
     Client(ClientConnectingScene),
     Server(ServerConnectingScene),
-}
-
-#[derive(Debug, Clone)]
-pub enum ConnectingMessage {
-    Edit(Action),
-    Connect,
-    Return,
 }
 
 impl Default for ConnectingScene {
@@ -38,11 +31,5 @@ impl ConnectingScene {
             }
         }
         Command::none()
-    }
-}
-
-impl From<ConnectingMessage> for AppMessage {
-    fn from(value: ConnectingMessage) -> Self {
-        Self::Connecting(value)
     }
 }

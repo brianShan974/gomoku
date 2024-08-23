@@ -1,6 +1,6 @@
 use crate::gui::{
-    connecting_scenes::connecting_scene::ConnectingScene, game_scene::GameScene,
-    menu_scene::MenuScene, role_selection_scene::RoleSelectionScene,
+    connecting::scene::ConnectingScene, game::scene::GameScene, menu::scene::MenuScene,
+    role_selection::scene::RoleSelectionScene,
 };
 
 #[derive(Debug)]

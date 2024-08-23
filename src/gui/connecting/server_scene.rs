@@ -1,6 +1,6 @@
 use iced::Command;
 
-use crate::gui::{app::AppElement, connecting_scenes::connecting_scene::ConnectingMessage};
+use crate::gui::{app::AppElement, connecting::message::ConnectingMessage};
 
 #[derive(Debug, Default)]
 pub struct ServerConnectingScene;

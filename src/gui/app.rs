@@ -1,23 +1,20 @@
 use iced::{
-    executor, theme,
+    executor,
+    theme::Theme,
     window::{self, Id},
-    Application, Command,
+    Application, Command, Element, Renderer,
 };
 
 use crate::gui::{
-    connecting_scenes::{
-        client_connecting_scene::ClientConnectingScene,
-        connecting_scene::{ConnectingMessage, ConnectingScene},
-        server_connecting_scene::ServerConnectingScene,
-    },
+    connecting::{message::ConnectingMessage, scene::ConnectingScene},
     connection_state::ConnectionState,
-    game_scene::{GameMessage, GameScene},
-    menu_scene::{MenuMessage, MenuScene},
-    role_selection_scene::{RoleSelectionMessage, RoleSelectionScene},
+    game::message::GameMessage,
+    menu::scene::MenuMessage,
+    role_selection::scene::{Role, RoleSelectionMessage},
     scene::Scene,
 };
 
-pub type AppElement<'a> = iced::Element<'a, AppMessage, theme::Theme, iced::Renderer>;
+pub type AppElement<'a> = Element<'a, AppMessage, Theme, Renderer>;
 pub type AppCommand = Command<AppMessage>;
 
 const NUM_SCENE: usize = 4;
@@ -28,13 +25,14 @@ pub enum AppMessage {
     Connecting(ConnectingMessage),
     Game(GameMessage),
     Menu(MenuMessage),
-    Nothing,
+    // Nothing,
     Exit,
 }
 
 #[derive(Debug, Default)]
 pub struct Gomoku {
     current_scene: Scene,
+    role: Role,
     connection_state: ConnectionState,
     scenes: [Scene; NUM_SCENE],
 }
@@ -42,7 +40,7 @@ pub struct Gomoku {
 impl Application for Gomoku {
     type Executor = executor::Default;
     type Message = AppMessage;
-    type Theme = theme::Theme;
+    type Theme = Theme;
     type Flags = ();
 
     fn new(_flags: Self::Flags) -> (Self, Command<Self::Message>) {
@@ -73,7 +71,7 @@ impl Application for Gomoku {
         }
     }
 
-    fn view(&self) -> iced::Element<'_, Self::Message, Self::Theme, iced::Renderer> {
+    fn view(&self) -> Element<'_, Self::Message, Self::Theme, Renderer> {
         match &self.current_scene {
             Scene::Start(ConnectingScene::Client(scene)) => scene.view(),
             Scene::Start(ConnectingScene::Server(scene)) => scene.view(),
@@ -89,7 +87,11 @@ impl Gomoku {
         &mut self,
         message: RoleSelectionMessage,
     ) -> Command<AppMessage> {
-        unimplemented!()
+        self.role = match message {
+            RoleSelectionMessage::ChooseClient => Role::Client,
+            RoleSelectionMessage::ChooseServer => Role::Server,
+        };
+        Command::none()
     }
 
     fn process_connecting_message(&mut self, message: ConnectingMessage) -> Command<AppMessage> {

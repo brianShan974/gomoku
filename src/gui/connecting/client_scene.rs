@@ -9,8 +9,10 @@ use iced::{
 
 use std::net::SocketAddr;
 
-use crate::gui::app::{AppElement, AppMessage};
-use crate::gui::connecting_scenes::connecting_scene::ConnectingMessage;
+use crate::gui::{
+    app::{AppElement, AppMessage},
+    connecting::message::ConnectingMessage,
+};
 
 #[derive(Debug, Default)]
 enum ClientStartingSceneState {

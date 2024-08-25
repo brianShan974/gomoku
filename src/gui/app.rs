@@ -1,14 +1,17 @@
 use iced::{
     executor,
     theme::Theme,
+    widget::text_editor::Content,
     window::{self, Id},
     Application, Command, Element, Renderer,
 };
 
+use std::net::SocketAddr;
+
 use crate::gui::{
     app_message::AppMessage,
     connecting::{
-        client_scene::ClientConnectingScene, message::ConnectingMessage, scene::ConnectingScene,
+        client_scene::ClientConnectingScene, message::ConnectingMessage,
         server_scene::ServerConnectingScene,
     },
     game::{message::GameMessage, scene::GameScene},

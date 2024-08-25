@@ -1,4 +1,5 @@
 use iced::{
+    alignment::Horizontal,
     widget::{
         button, column, row, text_editor,
         text_editor::{Action, Content, Edit},
@@ -17,7 +18,7 @@ use crate::gui::{
 };
 
 #[derive(Debug, Default)]
-enum ClientConnectingSceneState {
+pub enum ClientConnectingSceneState {
     #[default]
     Default,
     Error,
@@ -59,7 +60,9 @@ impl Scene for ClientConnectingScene {
 
         let buttons = row!(connect_button, exit_button, return_button);
 
-        column!(user_hint, editor, buttons).into()
+        column!(user_hint, editor, buttons)
+            .align_items(Horizontal::Center.into())
+            .into()
     }
 
     fn update(&mut self, message: AppMessage) -> AppCommand {

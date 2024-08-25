@@ -1,4 +1,5 @@
 use iced::{
+    alignment::Horizontal,
     widget::{button, column, row, Text},
     Command,
 };
@@ -35,7 +36,9 @@ impl Scene for RoleSelectionScene {
 
         let exit_button = button("EXIT").on_press(AppMessage::Exit);
 
-        column!(user_hint, buttons, exit_button).into()
+        column!(user_hint, buttons, exit_button)
+            .align_items(Horizontal::Center.into())
+            .into()
     }
 
     fn update(&mut self, message: AppMessage) -> AppCommand {

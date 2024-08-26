@@ -1,12 +1,16 @@
+use core::panic;
+
 use iced::{
     alignment::Horizontal,
     widget::{button, column, row, Text},
+    Command,
 };
 
 use crate::gui::{
     app::{AppCommand, AppElement},
     app_message::AppMessage,
-    scene::{Scene, UpdateResult},
+    connecting::{client_scene::ClientConnectingScene, server_scene::ServerConnectingScene},
+    scene::{Scene, SceneType, SceneUpdateResult},
 };
 
 #[derive(Debug, Default)]
@@ -40,8 +44,24 @@ impl Scene for RoleSelectionScene {
             .into()
     }
 
-    fn update(&mut self, message: AppMessage) -> UpdateResult {
-        unimplemented!()
+    fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
+        if let AppMessage::SelectRole(message) = message {
+            let command = Command::none();
+            match message {
+                RoleSelectionMessage::ChooseClient => SceneUpdateResult::SceneSwitch(
+                    SceneType::Connecting(Role::Client),
+                    Box::new(ClientConnectingScene::default()),
+                    command,
+                ),
+                RoleSelectionMessage::ChooseServer => SceneUpdateResult::SceneSwitch(
+                    SceneType::Connecting(Role::Server),
+                    Box::new(ServerConnectingScene::default()),
+                    command,
+                ),
+            }
+        } else {
+            panic!("Wrong type of message received!")
+        }
     }
 }
 

@@ -1,21 +1,9 @@
-use iced::{
-    executor,
-    theme::Theme,
-    widget::text_editor::Content,
-    window::{self, Id},
-    Application, Command, Element, Renderer,
-};
+use iced::{executor, theme::Theme, Application, Command, Element, Renderer};
 
 use crate::gui::{
     app_message::AppMessage,
-    connecting::{
-        client_scene::ClientConnectingScene, message::ConnectingMessage,
-        server_scene::ServerConnectingScene,
-    },
-    game::{message::GameMessage, scene::GameScene},
-    menu::scene::{MenuMessage, MenuScene},
-    role_selection::scene::{Role, RoleSelectionMessage, RoleSelectionScene},
-    scene::{Scene, SceneType, UpdateResult},
+    role_selection::scene::RoleSelectionScene,
+    scene::{Scene, SceneType, SceneUpdateResult},
 };
 
 pub type AppElement<'a> = Element<'a, AppMessage, Theme, Renderer>;
@@ -47,8 +35,8 @@ impl Application for Gomoku {
 
     fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
         match self.current_scene.update(message) {
-            UpdateResult::Command(command) => command,
-            UpdateResult::SceneSwitch(scene_type, scene, command) => {
+            SceneUpdateResult::CommandOnly(command) => command,
+            SceneUpdateResult::SceneSwitch(scene_type, scene, command) => {
                 self.current_scene_type = scene_type;
                 self.current_scene = scene;
                 command
@@ -57,9 +45,7 @@ impl Application for Gomoku {
     }
 
     fn view(&self) -> Element<'_, Self::Message, Self::Theme, Renderer> {
-        match &self.current_scene {
-            _ => todo!(),
-        }
+        self.current_scene.view()
     }
 }
 

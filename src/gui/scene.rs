@@ -13,13 +13,13 @@ pub enum SceneType {
     RoleSelection,
 }
 
-pub enum UpdateResult {
+pub enum SceneUpdateResult {
     SceneSwitch(SceneType, Box<dyn Scene>, AppCommand),
-    Command(AppCommand),
+    CommandOnly(AppCommand),
 }
 
 pub trait Scene {
     fn view(&self) -> AppElement<'_>;
 
-    fn update(&mut self, message: AppMessage) -> UpdateResult;
+    fn update(&mut self, message: AppMessage) -> SceneUpdateResult;
 }

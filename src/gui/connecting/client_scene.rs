@@ -14,7 +14,7 @@ use crate::gui::{
     app::{AppCommand, AppElement},
     app_message::AppMessage,
     connecting::message::ConnectingMessage,
-    scene::{Scene, UpdateResult},
+    scene::{Scene, SceneUpdateResult},
 };
 
 #[derive(Debug, Default)]
@@ -65,7 +65,7 @@ impl Scene for ClientConnectingScene {
             .into()
     }
 
-    fn update(&mut self, message: AppMessage) -> UpdateResult {
+    fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
         if let AppMessage::Connecting(ConnectingMessage::Edit(action)) = message {
             if let Action::Edit(Edit::Enter) = action {
                 match SocketAddr::parse_ascii(self.input_content.text().as_bytes()) {
@@ -79,6 +79,6 @@ impl Scene for ClientConnectingScene {
             }
             self.input_content.perform(action.clone());
         }
-        UpdateResult::Command(Command::none())
+        SceneUpdateResult::CommandOnly(Command::none())
     }
 }

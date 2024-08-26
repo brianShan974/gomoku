@@ -1,7 +1,7 @@
 use crate::gui::{
     app::AppElement,
     app_message::AppMessage,
-    scene::{Scene, UpdateResult},
+    scene::{Scene, SceneUpdateResult},
 };
 
 pub const LAYOUT: (f32, f32, f32) = (0.375, 1.0, 0.375);
@@ -14,7 +14,7 @@ impl Scene for GameScene {
         unimplemented!()
     }
 
-    fn update(&mut self, message: AppMessage) -> UpdateResult {
+    fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
         unimplemented!()
     }
 }

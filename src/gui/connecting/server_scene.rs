@@ -1,7 +1,7 @@
 use crate::gui::{
     app::AppElement,
     app_message::AppMessage,
-    scene::{Scene, UpdateResult},
+    scene::{Scene, SceneUpdateResult},
 };
 
 pub type Port = u16;
@@ -16,7 +16,7 @@ impl Scene for ServerConnectingScene {
         unimplemented!()
     }
 
-    fn update(&mut self, message: AppMessage) -> UpdateResult {
+    fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
         unimplemented!()
     }
 }

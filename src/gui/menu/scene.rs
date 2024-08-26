@@ -3,7 +3,7 @@ use iced::widget::{button, row};
 use crate::gui::{
     app::AppElement,
     app_message::AppMessage,
-    scene::{Scene, UpdateResult},
+    scene::{Scene, SceneUpdateResult},
 };
 
 #[derive(Debug, Clone)]
@@ -23,7 +23,7 @@ impl Scene for MenuScene {
         row!(resign_button, undo_button).into()
     }
 
-    fn update(&mut self, message: AppMessage) -> UpdateResult {
+    fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
         unimplemented!()
     }
 }

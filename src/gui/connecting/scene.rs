@@ -1,8 +1,7 @@
 use crate::gui::{
-    app::AppCommand,
     app_message::AppMessage,
     connecting::{client_scene::ClientConnectingScene, server_scene::ServerConnectingScene},
-    scene::{Scene, UpdateResult},
+    scene::{Scene, SceneUpdateResult},
 };
 
 #[derive(Debug)]
@@ -25,7 +24,7 @@ impl Scene for ConnectingScene {
         }
     }
 
-    fn update(&mut self, message: AppMessage) -> UpdateResult {
+    fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
         match self {
             Self::Client(scene) => scene.update(message),
             Self::Server(scene) => scene.update(message),

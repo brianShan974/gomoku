@@ -1,9 +1,7 @@
-use iced::Command;
-
 use crate::gui::{
-    app::{AppCommand, AppElement},
+    app::AppElement,
     app_message::AppMessage,
-    scene::Scene,
+    scene::{Scene, UpdateResult},
 };
 
 pub type Port = u16;
@@ -18,7 +16,7 @@ impl Scene for ServerConnectingScene {
         unimplemented!()
     }
 
-    fn update(&mut self, message: AppMessage) -> AppCommand {
+    fn update(&mut self, message: AppMessage) -> UpdateResult {
         unimplemented!()
     }
 }

@@ -5,7 +5,7 @@ use crate::gui::{
 };
 
 #[derive(Debug, Default)]
-pub enum CurrentScene {
+pub enum SceneType {
     Connecting(Role),
     Game,
     Menu,
@@ -13,8 +13,13 @@ pub enum CurrentScene {
     RoleSelection,
 }
 
+pub enum UpdateResult {
+    SceneSwitch(SceneType, Box<dyn Scene>, AppCommand),
+    Command(AppCommand),
+}
+
 pub trait Scene {
     fn view(&self) -> AppElement<'_>;
 
-    fn update(&mut self, message: AppMessage) -> AppCommand;
+    fn update(&mut self, message: AppMessage) -> UpdateResult;
 }

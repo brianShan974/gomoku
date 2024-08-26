@@ -1,13 +1,12 @@
 use iced::{
     alignment::Horizontal,
     widget::{button, column, row, Text},
-    Command,
 };
 
 use crate::gui::{
     app::{AppCommand, AppElement},
     app_message::AppMessage,
-    scene::Scene,
+    scene::{Scene, UpdateResult},
 };
 
 #[derive(Debug, Default)]
@@ -41,7 +40,7 @@ impl Scene for RoleSelectionScene {
             .into()
     }
 
-    fn update(&mut self, message: AppMessage) -> AppCommand {
+    fn update(&mut self, message: AppMessage) -> UpdateResult {
         unimplemented!()
     }
 }

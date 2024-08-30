@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-iced = { version = "0.12.1", features = ["highlighter"] }
+iced = { version = "0.12.1", features = ["highlighter", "tokio"] }
 tokio = { version = "1.39.2", features = ["full"] }
 
 [lints.rust]

@@ -11,50 +11,54 @@ use iced::{
 use std::net::SocketAddr;
 
 use crate::gui::{
-    app::{AppCommand, AppElement},
+    app::AppElement,
     app_message::AppMessage,
-    connecting::message::ConnectingMessage,
-    scene::{Scene, SceneUpdateResult},
+    connecting::message::{ClientConnectingMessage, ConnectingMessage},
+    connection_state::ConnectionState,
+    role_selection::scene::{Role, RoleSelectionScene},
+    scene::{Scene, SceneType, SceneUpdateResult},
 };
 
 #[derive(Debug, Default)]
 pub enum ClientConnectingSceneState {
     #[default]
-    Default,
-    Error,
+    Normal,
+    Error(String),
 }
 
 #[derive(Debug, Default)]
 pub struct ClientConnectingScene {
     input_content: Content,
-    addr: Option<SocketAddr>,
     state: ClientConnectingSceneState,
-}
-
-impl ClientConnectingScene {
-    pub fn get_addr(&self) -> Option<SocketAddr> {
-        self.addr
-    }
 }
 
 impl Scene for ClientConnectingScene {
     fn view(&self) -> AppElement<'_> {
-        let user_hint = match self.state {
-            ClientConnectingSceneState::Default => column!(
+        let user_hint = match &self.state {
+            ClientConnectingSceneState::Normal => column!(
                 Text::new("Please enter a valid IP address and a port."),
                 Text::new(r#"If it is an IPv4 address, please format it as "<ip>:<port>"."#),
                 Text::new(r#"If it is an IPv6 address, please format it as "[<ip>]:<port>"."#),
             ),
-            ClientConnectingSceneState::Error => column!(
-                Text::new("Your IP address and port are in an incorrect format."),
-                Text::new("Please enter a correct one:"),
+            ClientConnectingSceneState::Error(msg) => column!(
+                Text::new("Connection failed!"),
+                Text::new("Error message:"),
+                Text::new(msg),
+                Text::new("There are 3 possibilities:"),
+                Text::new("1. Your IP address and port may be in an incorrect format."),
+                Text::new(r#"If it is an IPv4 address, please format it as "<ip>:<port>"."#),
+                Text::new(r#"If it is an IPv6 address, please format it as "[<ip>]:<port>"."#),
+                Text::new("2. The IP address is not pointing to a working server."),
+                Text::new("3. The server is not listening on you port."),
             ),
         };
 
         let editor = text_editor(&self.input_content)
-            .on_action(|action| ConnectingMessage::Edit(action).into());
+            .on_action(|action| ClientConnectingMessage::EditAddress(action).into());
 
-        let connect_button = button("CONNECT").on_press(ConnectingMessage::Connect.into());
+        let connect_button = button("CONNECT").on_press(
+            ClientConnectingMessage::Connect(self.input_content.text().trim().to_string()).into(),
+        );
         let exit_button = button("EXIT").on_press(AppMessage::Exit);
         let return_button = button("GO BACK").on_press(ConnectingMessage::Return.into());
 
@@ -66,19 +70,28 @@ impl Scene for ClientConnectingScene {
     }
 
     fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
-        if let AppMessage::Connecting(ConnectingMessage::Edit(action)) = message {
-            if let Action::Edit(Edit::Enter) = action {
-                match SocketAddr::parse_ascii(self.input_content.text().as_bytes()) {
-                    Ok(addr) => {
-                        self.addr = Some(addr);
-                    }
-                    Err(_) => {
-                        self.state = ClientConnectingSceneState::Error;
-                    }
+        match message {
+            AppMessage::Connecting(ConnectingMessage::Client(message)) => match message {
+                ClientConnectingMessage::EditAddress(action) => {
+                    self.input_content.perform(action);
                 }
+                ClientConnectingMessage::ConnectionFailed(msg) => {
+                    self.state = ClientConnectingSceneState::Error(msg)
+                }
+                _ => unreachable!(),
+            },
+            AppMessage::Connecting(ConnectingMessage::Return) => {
+                return SceneUpdateResult::SceneSwitch(
+                    SceneType::Connecting(Role::Client),
+                    SceneType::RoleSelection,
+                    Box::new(RoleSelectionScene),
+                    Command::none(),
+                )
             }
-            self.input_content.perform(action.clone());
+            _ => unimplemented!(),
         }
         SceneUpdateResult::CommandOnly(Command::none())
     }
 }
+
+impl ClientConnectingScene {}

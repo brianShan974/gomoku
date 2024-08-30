@@ -4,7 +4,7 @@ use crate::gui::{
     role_selection::scene::Role,
 };
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy)]
 pub enum SceneType {
     Connecting(Role),
     Game,
@@ -14,7 +14,7 @@ pub enum SceneType {
 }
 
 pub enum SceneUpdateResult {
-    SceneSwitch(SceneType, Box<dyn Scene>, AppCommand),
+    SceneSwitch(SceneType, SceneType, Box<dyn Scene>, AppCommand),
     CommandOnly(AppCommand),
 }
 

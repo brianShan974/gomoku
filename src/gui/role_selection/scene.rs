@@ -22,9 +22,10 @@ pub enum RoleSelectionMessage {
     ChooseServer,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Copy, Default)]
 pub enum Role {
     #[default]
+    Undetermined,
     Client,
     Server,
 }
@@ -47,13 +48,16 @@ impl Scene for RoleSelectionScene {
     fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
         if let AppMessage::SelectRole(message) = message {
             let command = Command::none();
+            let old_scene_type = SceneType::RoleSelection;
             match message {
                 RoleSelectionMessage::ChooseClient => SceneUpdateResult::SceneSwitch(
+                    old_scene_type,
                     SceneType::Connecting(Role::Client),
                     Box::new(ClientConnectingScene::default()),
                     command,
                 ),
                 RoleSelectionMessage::ChooseServer => SceneUpdateResult::SceneSwitch(
+                    old_scene_type,
                     SceneType::Connecting(Role::Server),
                     Box::new(ServerConnectingScene::default()),
                     command,

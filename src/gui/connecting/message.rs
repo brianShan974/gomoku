@@ -1,16 +1,45 @@
-use iced::widget::text_editor::Action;
+use std::sync::Arc;
 
-use crate::gui::app_message::AppMessage;
+use iced::widget::text_editor::Action;
+use tokio::net::TcpStream;
+
+use crate::gui::{app_message::AppMessage, connecting::server_scene::Port};
 
 #[derive(Debug, Clone)]
 pub enum ConnectingMessage {
-    Edit(Action),
-    Connect,
+    Client(ClientConnectingMessage),
+    Server(ServerConnectingMessage),
     Return,
+}
+
+#[derive(Debug, Clone)]
+pub enum ClientConnectingMessage {
+    EditAddress(Action),
+    Connect(String),
+    Connected(Arc<TcpStream>),
+    ConnectionFailed(String),
+}
+
+#[derive(Debug, Clone)]
+pub enum ServerConnectingMessage {
+    PortGenerated(Port),
+    Connected,
 }
 
 impl From<ConnectingMessage> for AppMessage {
     fn from(value: ConnectingMessage) -> Self {
         Self::Connecting(value)
+    }
+}
+
+impl From<ClientConnectingMessage> for AppMessage {
+    fn from(value: ClientConnectingMessage) -> Self {
+        Self::Connecting(ConnectingMessage::Client(value))
+    }
+}
+
+impl From<ServerConnectingMessage> for AppMessage {
+    fn from(value: ServerConnectingMessage) -> Self {
+        Self::Connecting(ConnectingMessage::Server(value))
     }
 }

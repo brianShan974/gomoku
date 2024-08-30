@@ -1,5 +1,3 @@
-#![feature(addr_parse_ascii)]
-
 use iced::{Application, Settings};
 
 use crate::gui::app::Gomoku;

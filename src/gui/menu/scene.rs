@@ -3,14 +3,9 @@ use iced::widget::{button, row};
 use crate::gui::{
     app::AppElement,
     app_message::AppMessage,
+    menu::message::MenuMessage,
     scene::{Scene, SceneUpdateResult},
 };
-
-#[derive(Debug, Clone)]
-pub enum MenuMessage {
-    Resign,
-    Undo,
-}
 
 #[derive(Debug)]
 pub struct MenuScene {}

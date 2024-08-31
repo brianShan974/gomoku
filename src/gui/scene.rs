@@ -23,3 +23,9 @@ pub trait Scene {
 
     fn update(&mut self, message: AppMessage) -> SceneUpdateResult;
 }
+
+impl Default for SceneUpdateResult {
+    fn default() -> Self {
+        Self::CommandOnly(AppCommand::none())
+    }
+}

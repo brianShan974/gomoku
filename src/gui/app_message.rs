@@ -1,6 +1,6 @@
 use crate::gui::{
-    connecting::message::ConnectingMessage, game::message::GameMessage, menu::scene::MenuMessage,
-    role_selection::scene::RoleSelectionMessage,
+    connecting::message::ConnectingMessage, game::message::GameMessage, menu::message::MenuMessage,
+    role_selection::message::RoleSelectionMessage,
 };
 
 #[derive(Debug, Clone)]

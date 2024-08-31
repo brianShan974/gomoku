@@ -11,7 +11,10 @@ use tokio::net::TcpStream;
 
 use crate::gui::{
     app_message::AppMessage,
-    connecting::message::{ClientConnectingMessage, ConnectingMessage, ServerConnectingMessage},
+    connecting::{
+        message::{ClientConnectingMessage, ConnectingMessage, ServerConnectingMessage},
+        server_scene::ServerConnectingScene,
+    },
     network_handler::NetworkHandler,
     role_selection::scene::{Role, RoleSelectionScene},
     scene::{Scene, SceneType, SceneUpdateResult},
@@ -162,6 +165,19 @@ impl Gomoku {
         &mut self,
         message: ServerConnectingMessage,
     ) -> Command<AppMessage> {
-        unimplemented!()
+        match message {
+            ServerConnectingMessage::PortBound(listener) => {
+                self.network_handler = Some(NetworkHandler::Server(listener.clone()));
+                self.current_scene_type = SceneType::Connecting(Role::Server);
+                self.current_scene = Box::new(ServerConnectingScene::new(
+                    listener.local_addr().unwrap().port(),
+                ));
+                unimplemented!()
+            }
+            ServerConnectingMessage::Connected => {
+                let result = self.current_scene.update(message.into());
+                self.handle_scene_update_result(result)
+            }
+        }
     }
 }

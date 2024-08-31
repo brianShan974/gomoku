@@ -1,26 +1,27 @@
 use core::panic;
+use std::{sync::Arc, u16};
 
 use iced::{
     alignment::Horizontal,
     widget::{button, column, row, Text},
     Command,
 };
+use tokio::net::TcpListener;
 
 use crate::gui::{
     app::{AppCommand, AppElement},
     app_message::AppMessage,
-    connecting::{client_scene::ClientConnectingScene, server_scene::ServerConnectingScene},
+    connecting::{
+        client_scene::ClientConnectingScene,
+        message::{ConnectingMessage, ServerConnectingMessage},
+        server_scene::{get_available_port, ServerConnectingScene},
+    },
+    role_selection::message::RoleSelectionMessage,
     scene::{Scene, SceneType, SceneUpdateResult},
 };
 
 #[derive(Debug, Default)]
 pub struct RoleSelectionScene;
-
-#[derive(Debug, Clone)]
-pub enum RoleSelectionMessage {
-    ChooseClient,
-    ChooseServer,
-}
 
 #[derive(Debug, Clone, Copy, Default)]
 pub enum Role {
@@ -47,20 +48,31 @@ impl Scene for RoleSelectionScene {
 
     fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
         if let AppMessage::SelectRole(message) = message {
-            let command = Command::none();
             let old_scene_type = SceneType::RoleSelection;
             match message {
                 RoleSelectionMessage::ChooseClient => SceneUpdateResult::SceneSwitch(
                     old_scene_type,
                     SceneType::Connecting(Role::Client),
                     Box::new(ClientConnectingScene::default()),
-                    command,
+                    Command::none(),
                 ),
                 RoleSelectionMessage::ChooseServer => SceneUpdateResult::SceneSwitch(
                     old_scene_type,
                     SceneType::Connecting(Role::Server),
                     Box::new(ServerConnectingScene::default()),
-                    command,
+                    Command::perform(
+                        TcpListener::bind((
+                            "127.0.0.1",
+                            get_available_port(9000u16, u16::MAX).unwrap(),
+                        )),
+                        |result| match result {
+                            Ok(listener) => ConnectingMessage::Server(
+                                ServerConnectingMessage::PortBound(Arc::new(listener)),
+                            )
+                            .into(),
+                            Err(_) => RoleSelectionMessage::ChooseServer.into(),
+                        },
+                    ),
                 ),
             }
         } else {

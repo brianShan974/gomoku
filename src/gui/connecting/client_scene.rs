@@ -5,13 +5,12 @@ use iced::{
         text_editor::{Action, Content, Edit},
         Text,
     },
-    Command,
 };
 
 use std::net::SocketAddr;
 
 use crate::gui::{
-    app::AppElement,
+    app::{AppCommand, AppElement},
     app_message::AppMessage,
     connecting::message::{ClientConnectingMessage, ConnectingMessage},
     connection_state::ConnectionState,
@@ -91,7 +90,7 @@ impl Scene for ClientConnectingScene {
                         SceneType::Connecting(Role::Client),
                         SceneType::Game,
                         Box::new(GameScene::default()),
-                        Command::none(),
+                        AppCommand::none(),
                     )
                 }
                 _ => unreachable!(),
@@ -101,12 +100,12 @@ impl Scene for ClientConnectingScene {
                     SceneType::Connecting(Role::Client),
                     SceneType::RoleSelection,
                     Box::new(RoleSelectionScene),
-                    Command::none(),
+                    AppCommand::none(),
                 )
             }
             _ => unimplemented!(),
         }
-        SceneUpdateResult::CommandOnly(Command::none())
+        SceneUpdateResult::CommandOnly(AppCommand::none())
     }
 }
 

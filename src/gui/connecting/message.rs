@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use iced::widget::text_editor::Action;
-use tokio::net::TcpStream;
+use tokio::net::{TcpListener, TcpStream};
 
 use crate::gui::{app_message::AppMessage, connecting::server_scene::Port};
 
@@ -22,7 +22,7 @@ pub enum ClientConnectingMessage {
 
 #[derive(Debug, Clone)]
 pub enum ServerConnectingMessage {
-    PortGenerated(Port),
+    PortBound(Arc<TcpListener>),
     Connected,
 }
 

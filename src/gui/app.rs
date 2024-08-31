@@ -144,9 +144,10 @@ impl Gomoku {
                     Command::none()
                 }
             }
-            ClientConnectingMessage::Connected(s) => {
+            ClientConnectingMessage::Connected(ref s) => {
                 self.network_handler = Some(NetworkHandler::Client(s.clone()));
-                Command::none()
+                let result = self.current_scene.update(message.into());
+                self.handle_scene_update_result(result)
             }
             // ClientConnectingMessage::ConnectionFailed => unimplemented!(),
             ClientConnectingMessage::ConnectionFailed(_)

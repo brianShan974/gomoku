@@ -15,6 +15,7 @@ use crate::gui::{
     app_message::AppMessage,
     connecting::message::{ClientConnectingMessage, ConnectingMessage},
     connection_state::ConnectionState,
+    game::scene::GameScene,
     role_selection::scene::{Role, RoleSelectionScene},
     scene::{Scene, SceneType, SceneUpdateResult},
 };
@@ -53,8 +54,15 @@ impl Scene for ClientConnectingScene {
             ),
         };
 
-        let editor = text_editor(&self.input_content)
-            .on_action(|action| ClientConnectingMessage::EditAddress(action).into());
+        let editor = text_editor(&self.input_content).on_action(|action| {
+            match action {
+                Action::Edit(Edit::Enter) => {
+                    ClientConnectingMessage::Connect(self.input_content.text().trim().to_string())
+                }
+                _ => ClientConnectingMessage::EditAddress(action),
+            }
+            .into()
+        });
 
         let connect_button = button("CONNECT").on_press(
             ClientConnectingMessage::Connect(self.input_content.text().trim().to_string()).into(),
@@ -77,6 +85,14 @@ impl Scene for ClientConnectingScene {
                 }
                 ClientConnectingMessage::ConnectionFailed(msg) => {
                     self.state = ClientConnectingSceneState::Error(msg)
+                }
+                ClientConnectingMessage::Connected(_) => {
+                    return SceneUpdateResult::SceneSwitch(
+                        SceneType::Connecting(Role::Client),
+                        SceneType::Game,
+                        Box::new(GameScene::default()),
+                        Command::none(),
+                    )
                 }
                 _ => unreachable!(),
             },

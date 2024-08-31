@@ -1,4 +1,3 @@
-use core::panic;
 use std::sync::Arc;
 
 use iced::{
@@ -36,7 +35,7 @@ impl Application for Gomoku {
     type Theme = Theme;
     type Flags = ();
 
-    fn new(_flags: Self::Flags) -> (Self, Command<Self::Message>) {
+    fn new(_flags: Self::Flags) -> (Self, AppCommand) {
         let initial_state = Self {
             current_scene_type: SceneType::RoleSelection,
             current_scene: Box::new(RoleSelectionScene),
@@ -44,14 +43,14 @@ impl Application for Gomoku {
             // role: Role::Undetermined,
         };
 
-        (initial_state, Command::none())
+        (initial_state, AppCommand::none())
     }
 
     fn title(&self) -> String {
         String::from("A Gomoku Game")
     }
 
-    fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
+    fn update(&mut self, message: Self::Message) -> AppCommand {
         match message {
             AppMessage::Exit => window::close(Id::MAIN),
             // AppMessage::Connecting(ConnectingMessage::Client(ref msg)) => match msg {
@@ -95,7 +94,7 @@ impl Application for Gomoku {
 }
 
 impl Gomoku {
-    fn handle_scene_update_result(&mut self, result: SceneUpdateResult) -> Command<AppMessage> {
+    fn handle_scene_update_result(&mut self, result: SceneUpdateResult) -> AppCommand {
         match result {
             SceneUpdateResult::CommandOnly(command) => command,
             SceneUpdateResult::SceneSwitch(old_scene_type, new_scene_type, scene, command) => {
@@ -117,7 +116,7 @@ impl Gomoku {
         }
     }
 
-    fn handle_connection(&mut self, message: ConnectingMessage) -> Command<AppMessage> {
+    fn handle_connection(&mut self, message: ConnectingMessage) -> AppCommand {
         match message {
             ConnectingMessage::Client(message) => self.handle_client_connection(message),
             ConnectingMessage::Server(message) => self.handle_server_connection(message),
@@ -128,14 +127,11 @@ impl Gomoku {
         }
     }
 
-    fn handle_client_connection(
-        &mut self,
-        message: ClientConnectingMessage,
-    ) -> Command<AppMessage> {
+    fn handle_client_connection(&mut self, message: ClientConnectingMessage) -> AppCommand {
         match message {
             ClientConnectingMessage::Connect(socket_addr) => {
                 if self.network_handler.is_none() {
-                    Command::perform(TcpStream::connect(socket_addr), |s| match s {
+                    AppCommand::perform(TcpStream::connect(socket_addr), |s| match s {
                         Ok(s) => AppMessage::Connecting(ConnectingMessage::Client(
                             ClientConnectingMessage::Connected(Arc::new(s)),
                         )),
@@ -144,7 +140,7 @@ impl Gomoku {
                         )),
                     })
                 } else {
-                    Command::none()
+                    AppCommand::none()
                 }
             }
             ClientConnectingMessage::Connected(ref s) => {
@@ -161,10 +157,7 @@ impl Gomoku {
         }
     }
 
-    fn handle_server_connection(
-        &mut self,
-        message: ServerConnectingMessage,
-    ) -> Command<AppMessage> {
+    fn handle_server_connection(&mut self, message: ServerConnectingMessage) -> AppCommand {
         match message {
             ServerConnectingMessage::PortBound(listener) => {
                 self.network_handler = Some(NetworkHandler::Server(listener.clone()));
@@ -172,7 +165,10 @@ impl Gomoku {
                 self.current_scene = Box::new(ServerConnectingScene::new(
                     listener.local_addr().unwrap().port(),
                 ));
-                unimplemented!()
+                // AppCommand::perform(listener.clone().accept(), |_| {
+                //     ServerConnectingMessage::Connected.into()
+                // })
+                AppCommand::none()
             }
             ServerConnectingMessage::Connected => {
                 let result = self.current_scene.update(message.into());

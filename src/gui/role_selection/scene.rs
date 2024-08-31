@@ -1,10 +1,8 @@
-use core::panic;
-use std::{sync::Arc, u16};
+use std::sync::Arc;
 
 use iced::{
     alignment::Horizontal,
     widget::{button, column, row, Text},
-    Command,
 };
 use tokio::net::TcpListener;
 
@@ -54,13 +52,13 @@ impl Scene for RoleSelectionScene {
                     old_scene_type,
                     SceneType::Connecting(Role::Client),
                     Box::new(ClientConnectingScene::default()),
-                    Command::none(),
+                    AppCommand::none(),
                 ),
                 RoleSelectionMessage::ChooseServer => SceneUpdateResult::SceneSwitch(
                     old_scene_type,
                     SceneType::Connecting(Role::Server),
                     Box::new(ServerConnectingScene::default()),
-                    Command::perform(
+                    AppCommand::perform(
                         TcpListener::bind((
                             "127.0.0.1",
                             get_available_port(9000u16, u16::MAX).unwrap(),

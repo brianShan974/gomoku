@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{io::Result, net::SocketAddr, sync::Arc};
 
 use iced::{
     executor,
@@ -6,11 +6,11 @@ use iced::{
     window::{self, Id},
     Application, Command, Element, Renderer,
 };
-use tokio::net::TcpStream;
+use tokio::net::{TcpListener, TcpStream};
 
 use crate::gui::{
     app_message::AppMessage,
-    connecting::{
+    network::{
         message::{ClientConnectingMessage, ConnectingMessage, ServerConnectingMessage},
         server_scene::ServerConnectingScene,
     },
@@ -53,33 +53,6 @@ impl Application for Gomoku {
     fn update(&mut self, message: Self::Message) -> AppCommand {
         match message {
             AppMessage::Exit => window::close(Id::MAIN),
-            // AppMessage::Connecting(ConnectingMessage::Client(ref msg)) => match msg {
-            //     ClientConnectingMessage::Connect(socket_addr) => {
-            //         if self.network_handler.is_none() {
-            //             Command::perform(TcpStream::connect(socket_addr.to_string()), |s| match s {
-            //                 Ok(s) => AppMessage::Connecting(ConnectingMessage::Client(
-            //                     ClientConnectingMessage::Connected(Arc::new(s)),
-            //                 )),
-            //                 Err(_) => AppMessage::Connecting(ConnectingMessage::Client(
-            //                     ClientConnectingMessage::ConnectionFailed,
-            //                 )),
-            //             })
-            //         } else {
-            //             Command::none()
-            //         }
-            //     }
-            //     ClientConnectingMessage::Connected(s) => {
-            //         self.network_handler = Some(NetworkHandler::Client(s.clone()));
-            //         Command::none()
-            //     }
-            //     ClientConnectingMessage::EditAddress(action) => {
-            //         match self.current_scene.update(message) {
-            //             SceneUpdateResult::CommandOnly(command) => command,
-            //             _ => unreachable!(),
-            //         }
-            //     }
-            //     ClientConnectingMessage::ConnectionFailed => unimplemented!(),
-            // },
             AppMessage::Connecting(message) => self.handle_connection(message),
             _ => {
                 let result = self.current_scene.update(message);
@@ -106,9 +79,7 @@ impl Gomoku {
                 //     }
                 //     _ => {}
                 // }
-                if let (SceneType::Connecting(_), SceneType::RoleSelection) =
-                    (old_scene_type, new_scene_type)
-                {
+                if let (_, SceneType::RoleSelection) = (old_scene_type, new_scene_type) {
                     self.network_handler = None;
                 }
                 command
@@ -165,12 +136,14 @@ impl Gomoku {
                 self.current_scene = Box::new(ServerConnectingScene::new(
                     listener.local_addr().unwrap().port(),
                 ));
-                // AppCommand::perform(listener.clone().accept(), |_| {
-                //     ServerConnectingMessage::Connected.into()
-                // })
-                AppCommand::none()
+                let task = async move { listener.accept().await };
+                AppCommand::perform(task, |result| match result {
+                    Ok((stream, _)) => ServerConnectingMessage::Connected(Arc::new(stream)).into(),
+                    Err(_) => unimplemented!(),
+                })
             }
-            ServerConnectingMessage::Connected => {
+            ServerConnectingMessage::Connected(ref tcp_stream) => {
+                self.network_handler = Some(NetworkHandler::ServerConnected(tcp_stream.clone()));
                 let result = self.current_scene.update(message.into());
                 self.handle_scene_update_result(result)
             }

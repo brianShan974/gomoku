@@ -1,6 +1,6 @@
 use crate::gui::{
     app_message::AppMessage,
-    connecting::{client_scene::ClientConnectingScene, server_scene::ServerConnectingScene},
+    network::{client_scene::ClientConnectingScene, server_scene::ServerConnectingScene},
     scene::{Scene, SceneUpdateResult},
 };
 

@@ -12,9 +12,9 @@ use std::net::SocketAddr;
 use crate::gui::{
     app::{AppCommand, AppElement},
     app_message::AppMessage,
-    connecting::message::{ClientConnectingMessage, ConnectingMessage},
     connection_state::ConnectionState,
     game::scene::GameScene,
+    network::message::{ClientConnectingMessage, ConnectingMessage},
     role_selection::scene::{Role, RoleSelectionScene},
     scene::{Scene, SceneType, SceneUpdateResult},
 };

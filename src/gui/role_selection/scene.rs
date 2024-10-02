@@ -9,10 +9,10 @@ use tokio::net::TcpListener;
 use crate::gui::{
     app::{AppCommand, AppElement},
     app_message::AppMessage,
-    connecting::{
+    network::{
         client_scene::ClientConnectingScene,
         message::{ConnectingMessage, ServerConnectingMessage},
-        server_scene::{get_available_port, ServerConnectingScene},
+        server_scene::{get_available_port, ServerConnectingScene, MAX_PORT, MIN_PORT},
     },
     role_selection::message::RoleSelectionMessage,
     scene::{Scene, SceneType, SceneUpdateResult},
@@ -61,7 +61,7 @@ impl Scene for RoleSelectionScene {
                     AppCommand::perform(
                         TcpListener::bind((
                             "127.0.0.1",
-                            get_available_port(9000u16, u16::MAX).unwrap(),
+                            get_available_port(MIN_PORT, MAX_PORT).unwrap(),
                         )),
                         |result| match result {
                             Ok(listener) => ConnectingMessage::Server(

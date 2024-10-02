@@ -5,4 +5,5 @@ use tokio::net::{TcpListener, TcpStream};
 pub enum NetworkHandler {
     Client(Arc<TcpStream>),
     Server(Arc<TcpListener>),
+    ServerConnected(Arc<TcpStream>),
 }

@@ -1,5 +1,5 @@
 use crate::gui::{
-    connecting::message::ConnectingMessage, game::message::GameMessage, menu::message::MenuMessage,
+    game::message::GameMessage, menu::message::MenuMessage, network::message::ConnectingMessage,
     role_selection::message::RoleSelectionMessage,
 };
 

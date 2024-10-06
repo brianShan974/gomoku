@@ -1,34 +1,19 @@
 use crate::game_objects::piece::Color;
-use crate::game_objects::piece::{ChessPiece, Player};
 use crate::game_objects::playing::{Move, PlayingError};
 
-/// The default size of the board. A typical game has a 15 by 15 board.
-pub(super) const BOARD_SIZE: usize = 15;
-/// The goal is to connect 5 pieces in a row, so the goal is 5.
-pub(super) const WIN_GOAL: usize = 5;
-/// There are 4 directions in total around one position that need to be checked to determine if there is a winner.
-/// Two of them are vertical and horizontal, and the other 2 are diagonal.
-pub(super) const DIRECTIONS: usize = 4;
-/// To determine if there is a winner, 4 crosses to each direction need to be checked so the max
-/// offset is 4.
-pub(super) const MAX_OFFSET: usize = 4;
-
-pub(super) type Cross = Option<ChessPiece>;
-pub(super) type Winner = Player;
-pub(super) type Pos = (usize, usize);
-
-type FivePos = Option<[Pos; WIN_GOAL]>;
-type FivePosSeq = [FivePos; WIN_GOAL];
+use super::{
+    ChessPiece, Cross, FivePosSeq, Pos, Winner, BOARD_SIDELENGTH, DIRECTIONS, MAX_OFFSET, WIN_GOAL,
+};
 
 /// The board struct.
 #[derive(Debug, Default)]
 pub struct Board {
-    pub(super) grid: [[Cross; BOARD_SIZE]; BOARD_SIZE],
+    pub(super) grid: [[Cross; BOARD_SIDELENGTH]; BOARD_SIDELENGTH],
 }
 
 impl Board {
     /// Construct a board from a given grid.
-    pub fn new(grid: [[Cross; BOARD_SIZE]; BOARD_SIZE]) -> Self {
+    pub fn new(grid: [[Cross; BOARD_SIDELENGTH]; BOARD_SIDELENGTH]) -> Self {
         Self { grid }
     }
 
@@ -46,7 +31,7 @@ impl Board {
     /// Get the piece on a given position on the grid.
     pub fn get_on_pos(&self, pos: Pos) -> Cross {
         let (row, col) = pos;
-        if row >= BOARD_SIZE || col >= BOARD_SIZE {
+        if row >= BOARD_SIDELENGTH || col >= BOARD_SIDELENGTH {
             return None;
         }
 
@@ -109,10 +94,10 @@ fn get_horizontal_fives(row: usize, col: usize) -> FivePosSeq {
 
     // column lower bound
     let col_lb = if col < WIN_GOAL { 0 } else { col - MAX_OFFSET };
-    let col_ub = if col <= BOARD_SIZE - WIN_GOAL {
+    let col_ub = if col <= BOARD_SIDELENGTH - WIN_GOAL {
         col
     } else {
-        BOARD_SIZE - WIN_GOAL
+        BOARD_SIDELENGTH - WIN_GOAL
     };
 
     for (i, col) in (col_lb..=col_ub).enumerate() {
@@ -133,10 +118,10 @@ fn get_vertical_fives(row: usize, col: usize) -> FivePosSeq {
 
     // row lower bound
     let row_lb = if row < WIN_GOAL { 0 } else { row - MAX_OFFSET };
-    let row_ub = if row <= BOARD_SIZE - WIN_GOAL {
+    let row_ub = if row <= BOARD_SIDELENGTH - WIN_GOAL {
         row
     } else {
-        BOARD_SIZE - WIN_GOAL
+        BOARD_SIDELENGTH - WIN_GOAL
     };
 
     for (i, row) in (row_lb..=row_ub).enumerate() {
@@ -167,13 +152,13 @@ fn get_main_diag_fives(row: usize, col: usize) -> FivePosSeq {
         row - MAX_OFFSET
     };
     let row_ub = if row <= col {
-        if col > BOARD_SIZE - WIN_GOAL {
-            row + ((BOARD_SIZE - 1) - col)
+        if col > BOARD_SIDELENGTH - WIN_GOAL {
+            row + ((BOARD_SIDELENGTH - 1) - col)
         } else {
             row
         }
-    } else if row > BOARD_SIZE - WIN_GOAL {
-        BOARD_SIZE - WIN_GOAL
+    } else if row > BOARD_SIDELENGTH - WIN_GOAL {
+        BOARD_SIDELENGTH - WIN_GOAL
     } else {
         row
     };
@@ -195,9 +180,9 @@ fn get_main_diag_fives(row: usize, col: usize) -> FivePosSeq {
 fn get_off_diag_fives(row: usize, col: usize) -> FivePosSeq {
     let mut result = [None; WIN_GOAL];
 
-    let row_lb = if row + col >= BOARD_SIZE - 1 {
-        if col > BOARD_SIZE - WIN_GOAL {
-            row - ((BOARD_SIZE - 1) - col)
+    let row_lb = if row + col >= BOARD_SIDELENGTH - 1 {
+        if col > BOARD_SIDELENGTH - WIN_GOAL {
+            row - ((BOARD_SIDELENGTH - 1) - col)
         } else {
             row - MAX_OFFSET
         }
@@ -206,14 +191,14 @@ fn get_off_diag_fives(row: usize, col: usize) -> FivePosSeq {
     } else {
         row - MAX_OFFSET
     };
-    let row_ub = if row + col <= BOARD_SIZE - 1 {
+    let row_ub = if row + col <= BOARD_SIDELENGTH - 1 {
         if col < WIN_GOAL {
             row + col
         } else {
             row
         }
-    } else if row > BOARD_SIZE - WIN_GOAL {
-        BOARD_SIZE - WIN_GOAL
+    } else if row > BOARD_SIDELENGTH - WIN_GOAL {
+        BOARD_SIDELENGTH - WIN_GOAL
     } else {
         row
     };

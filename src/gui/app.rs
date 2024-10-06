@@ -21,6 +21,8 @@ use crate::gui::{
 
 pub type AppElement<'a> = Element<'a, AppMessage, Theme, Renderer>;
 pub type AppCommand = Command<AppMessage>;
+pub type AppTheme = Theme;
+pub type AppRenderer = Renderer;
 
 pub struct Gomoku {
     current_scene_type: SceneType,
@@ -32,7 +34,7 @@ pub struct Gomoku {
 impl Application for Gomoku {
     type Executor = executor::Default;
     type Message = AppMessage;
-    type Theme = Theme;
+    type Theme = AppTheme;
     type Flags = ();
 
     fn new(_flags: Self::Flags) -> (Self, AppCommand) {

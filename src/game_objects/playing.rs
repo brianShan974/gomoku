@@ -1,4 +1,4 @@
-use super::{board::Pos, piece::Player};
+use super::{Player, Pos};
 
 #[derive(Debug, Clone)]
 pub(crate) struct Move {

@@ -4,7 +4,9 @@ use crate::{game_objects::playing::Move, gui::app_message::AppMessage};
 pub enum GameMessage {
     Pause,
     Resume,
-    Play(Move),
+    SelfPlayed(Move),
+    OpponentPlayed(Move),
+    OpponentUpdated,
 }
 
 impl From<GameMessage> for AppMessage {

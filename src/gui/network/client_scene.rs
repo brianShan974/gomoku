@@ -9,14 +9,17 @@ use iced::{
 
 use std::net::SocketAddr;
 
-use crate::gui::{
-    app::{AppCommand, AppElement},
-    app_message::AppMessage,
-    connection_state::ConnectionState,
-    game::scene::GameScene,
-    network::message::{ClientConnectingMessage, ConnectingMessage},
-    role_selection::scene::{Role, RoleSelectionScene},
-    scene::{Scene, SceneType, SceneUpdateResult},
+use crate::{
+    game_objects::piece::Color,
+    gui::{
+        app::{AppCommand, AppElement},
+        app_message::AppMessage,
+        connection_state::ConnectionState,
+        game::scene::GameScene,
+        network::message::{ClientConnectingMessage, ConnectingMessage},
+        role_selection::scene::{Role, RoleSelectionScene},
+        scene::{Scene, SceneType, SceneUpdateResult},
+    },
 };
 
 #[derive(Debug, Default)]
@@ -85,11 +88,11 @@ impl Scene for ClientConnectingScene {
                 ClientConnectingMessage::ConnectionFailed(msg) => {
                     self.state = ClientConnectingSceneState::Error(msg)
                 }
-                ClientConnectingMessage::Connected(_) => {
+                ClientConnectingMessage::Connected(stream) => {
                     return SceneUpdateResult::SceneSwitch(
                         SceneType::Connecting(Role::Client),
                         SceneType::Game,
-                        Box::new(GameScene::default()),
+                        Box::new(GameScene::new(stream, Color::White)),
                         AppCommand::none(),
                     )
                 }

@@ -2,13 +2,16 @@ use std::{net::TcpListener, u16};
 
 use iced::widget::{button, column, Text};
 
-use crate::gui::{
-    app::{AppCommand, AppElement},
-    app_message::AppMessage,
-    game::scene::GameScene,
-    network::message::{ConnectingMessage, ServerConnectingMessage},
-    role_selection::scene::{Role, RoleSelectionScene},
-    scene::{Scene, SceneType, SceneUpdateResult},
+use crate::{
+    game_objects::piece::Color,
+    gui::{
+        app::{AppCommand, AppElement},
+        app_message::AppMessage,
+        game::scene::GameScene,
+        network::message::{ConnectingMessage, ServerConnectingMessage},
+        role_selection::scene::{Role, RoleSelectionScene},
+        scene::{Scene, SceneType, SceneUpdateResult},
+    },
 };
 
 pub type Port = u16;
@@ -41,11 +44,11 @@ impl Scene for ServerConnectingScene {
     fn update(&mut self, message: AppMessage) -> SceneUpdateResult {
         match message {
             AppMessage::Connecting(ConnectingMessage::Server(
-                ServerConnectingMessage::Connected(_),
+                ServerConnectingMessage::Connected(stream),
             )) => SceneUpdateResult::SceneSwitch(
                 SceneType::Connecting(Role::Server),
                 SceneType::Game,
-                Box::new(GameScene::default()),
+                Box::new(GameScene::new(stream, Color::Black)),
                 AppCommand::none(),
             ),
             AppMessage::Connecting(ConnectingMessage::Return) => SceneUpdateResult::SceneSwitch(

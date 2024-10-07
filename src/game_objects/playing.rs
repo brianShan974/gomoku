@@ -6,6 +6,15 @@ pub(crate) struct Move {
     pos: Pos,
 }
 
+pub enum PlayingError {
+    PositionOccupied,
+}
+
+pub enum UndoError {
+    NoMorePieceOnBoard,
+    CurrentPlayerCannotUndo,
+}
+
 impl Move {
     pub fn new(player: Player, pos: Pos) -> Self {
         Self { player, pos }
@@ -20,6 +29,11 @@ impl Move {
     }
 }
 
-pub(super) enum PlayingError {
-    PositionOccupied,
+impl Player {
+    pub fn get_opponent(&self) -> Self {
+        match self {
+            Self::Black => Self::White,
+            Self::White => Self::Black,
+        }
+    }
 }

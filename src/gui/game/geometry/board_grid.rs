@@ -17,6 +17,17 @@ impl<'a> BoardGrid<'a> {
     }
 
     pub fn draw(&mut self) {
+        self.draw_grid();
+    }
+
+    fn get_point_on_pos(pos: Pos) -> Point {
+        let Point { x, y: _ } = Self::get_start_of_vertical_line_n(pos.0);
+        let Point { x: _, y } = Self::get_start_of_horizontal_line_n(pos.1);
+
+        Point { x, y }
+    }
+
+    fn draw_grid(&mut self) {
         let stroke = Stroke {
             width: STROKE_WIDTH as f32,
             ..Stroke::default()
@@ -33,13 +44,6 @@ impl<'a> BoardGrid<'a> {
             self.frame.stroke(&v_line, stroke.clone());
             self.frame.stroke(&h_line, stroke.clone());
         }
-    }
-
-    fn get_point_on_pos(pos: Pos) -> Point {
-        let Point { x, y: _ } = Self::get_start_of_vertical_line_n(pos.0);
-        let Point { x: _, y } = Self::get_start_of_horizontal_line_n(pos.1);
-
-        Point { x, y }
     }
 
     // all 4 methods below require n to start from 0

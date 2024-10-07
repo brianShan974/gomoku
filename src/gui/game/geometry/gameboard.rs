@@ -1,21 +1,26 @@
 use std::marker::PhantomData;
 
 use iced::{
-    mouse::Cursor,
+    mouse::{Cursor, Interaction},
     widget::canvas::{Frame, Program},
     Rectangle,
 };
 
-use crate::gui::{
-    app::{AppRenderer, AppTheme},
-    app_message::AppMessage,
-    game::geometry::board_grid::BoardGrid,
+use crate::{
+    game_objects::board::Board,
+    gui::{
+        app::{AppRenderer, AppTheme},
+        app_message::AppMessage,
+        game::geometry::board_grid::BoardGrid,
+    },
 };
 
 use super::BOARD_SIZE;
 
 #[derive(Default)]
-pub struct GameBoard {}
+pub struct GameBoard {
+    game_board: Board,
+}
 
 impl Program<AppMessage, AppTheme, AppRenderer> for GameBoard {
     type State = ();
@@ -36,4 +41,13 @@ impl Program<AppMessage, AppTheme, AppRenderer> for GameBoard {
 
         vec![frame.into_geometry()]
     }
+
+    // fn mouse_interaction(
+    //     &self,
+    //     _state: &Self::State,
+    //     _bounds: Rectangle,
+    //     _cursor: Cursor,
+    // ) -> Interaction {
+    //     unimplemented!()
+    // }
 }

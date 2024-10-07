@@ -1,35 +1,48 @@
 use crate::game_objects::piece::Color;
 use crate::game_objects::playing::{Move, PlayingError};
 
+use super::playing::UndoError;
 use super::{
-    ChessPiece, Cross, FivePosSeq, Pos, Winner, BOARD_SIDELENGTH, DIRECTIONS, MAX_OFFSET, WIN_GOAL,
+    ChessPiece, Cross, FivePosSeq, Player, Pos, Winner, BOARD_SIDELENGTH, DIRECTIONS, MAX_OFFSET,
+    WIN_GOAL,
 };
 
 /// The board struct.
 #[derive(Debug, Default)]
 pub struct Board {
     pub(super) grid: [[Cross; BOARD_SIDELENGTH]; BOARD_SIDELENGTH],
+    moves: Vec<Move>,
 }
 
 impl Board {
-    /// Construct a board from a given grid.
-    pub fn new(grid: [[Cross; BOARD_SIDELENGTH]; BOARD_SIDELENGTH]) -> Self {
-        Self { grid }
+    pub fn apply_move(&mut self, next_move: Move) -> Result<(), PlayingError> {
+        let pos = next_move.get_pos();
+        if self.get_on_pos(pos).is_some() {
+            return Err(PlayingError::PositionOccupied);
+        }
+
+        let chess_piece = next_move.get_player();
+        self.set_on_pos(pos, chess_piece);
+        self.moves.push(next_move);
+
+        Ok(())
     }
 
-    /// Try to place the piece on a position. Fails if the position is occupied.
-    pub fn place_on_pos(&mut self, pos: (usize, usize), piece: Color) -> Result<(), String> {
-        match self.grid[pos.0][pos.1] {
-            None => {
-                self.grid[pos.0][pos.1] = Some(piece);
-                Ok(())
-            }
-            Some(_) => Err(String::from("The position is already occupied!")),
+    pub fn undo_move(&mut self, current_player: Player) -> Result<(), UndoError> {
+        if self.moves.is_empty() {
+            Err(UndoError::NoMorePieceOnBoard)
+        } else if !self.player_can_undo(current_player) {
+            Err(UndoError::CurrentPlayerCannotUndo)
+        } else {
+            let last_move = self.moves.pop().unwrap();
+            self.remove_on_pos(last_move.get_pos());
+
+            Ok(())
         }
     }
 
     /// Get the piece on a given position on the grid.
-    pub fn get_on_pos(&self, pos: Pos) -> Cross {
+    fn get_on_pos(&self, pos: Pos) -> Cross {
         let (row, col) = pos;
         if row >= BOARD_SIDELENGTH || col >= BOARD_SIDELENGTH {
             return None;
@@ -38,21 +51,18 @@ impl Board {
         self.grid[row][col]
     }
 
-    pub fn set_on_pos(&mut self, pos: Pos, piece: ChessPiece) {
+    fn set_on_pos(&mut self, pos: Pos, piece: ChessPiece) {
         let (row, col) = pos;
         self.grid[row][col] = Some(piece);
     }
 
-    fn apply_move(&mut self, next_move: Move) -> Result<(), PlayingError> {
-        let pos = next_move.get_pos();
-        if self.get_on_pos(pos).is_some() {
-            return Err(PlayingError::PositionOccupied);
-        }
+    fn player_can_undo(&self, player: Player) -> bool {
+        self.moves.last().unwrap().get_player() == player.get_opponent()
+    }
 
-        let chess_piece = next_move.get_player();
-        self.set_on_pos(pos, chess_piece);
-
-        Ok(())
+    fn remove_on_pos(&mut self, pos: Pos) {
+        let (row, col) = pos;
+        self.grid[row][col] = None;
     }
 
     /// Try to tell if there is a winner. Return None if the game is not over.

@@ -1,7 +1,10 @@
-use iced::widget::{
-    canvas,
-    canvas::{Fill, Program},
-    container, Text,
+use iced::{
+    widget::{
+        canvas,
+        canvas::{Fill, Program},
+        container, horizontal_space, row, Text,
+    },
+    Length,
 };
 
 use crate::{
@@ -15,7 +18,7 @@ use crate::{
 
 use super::geometry::gameboard::GameBoard;
 
-pub const LAYOUT: (f32, f32, f32) = (0.375, 1.0, 0.375);
+// pub const LAYOUT: (f32, f32, f32) = (0.375, 1.0, 0.375);
 
 #[derive(Debug, Default)]
 pub struct GameScene {

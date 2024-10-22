@@ -48,7 +48,7 @@ impl Scene for ServerConnectingScene {
             )) => SceneUpdateResult::SceneSwitch(
                 SceneType::Connecting(Role::Server),
                 SceneType::Game,
-                Box::new(GameScene::new(stream, Color::Black)),
+                Box::new(GameScene::new(Color::Black)),
                 AppCommand::none(),
             ),
             AppMessage::Connecting(ConnectingMessage::Return) => SceneUpdateResult::SceneSwitch(

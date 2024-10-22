@@ -3,7 +3,11 @@ use std::sync::Arc;
 use iced::widget::text_editor::Action;
 use tokio::net::{TcpListener, TcpStream};
 
-use crate::gui::{app_message::AppMessage, network::server_scene::Port};
+use crate::gui::{
+    app_message::AppMessage,
+    network::server_scene::Port,
+    network_handler::{LockedListener, LockedStream},
+};
 
 #[derive(Debug, Clone)]
 pub enum ConnectingMessage {
@@ -16,14 +20,14 @@ pub enum ConnectingMessage {
 pub enum ClientConnectingMessage {
     EditAddress(Action),
     Connect(String),
-    Connected(Arc<TcpStream>),
+    Connected(LockedStream),
     ConnectionFailed(String),
 }
 
 #[derive(Debug, Clone)]
 pub enum ServerConnectingMessage {
-    PortBound(Arc<TcpListener>),
-    Connected(Arc<TcpStream>),
+    PortBound(LockedListener),
+    Connected(LockedStream),
 }
 
 impl From<ConnectingMessage> for AppMessage {

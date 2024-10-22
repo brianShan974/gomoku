@@ -6,7 +6,10 @@ use iced::{
     window::{self, Id},
     Application, Command, Element, Renderer,
 };
-use tokio::net::{TcpListener, TcpStream};
+use tokio::{
+    net::{TcpListener, TcpStream},
+    sync::Mutex,
+};
 
 use crate::gui::{
     app_message::AppMessage,
@@ -106,7 +109,7 @@ impl Gomoku {
                 if self.network_handler.is_none() {
                     AppCommand::perform(TcpStream::connect(socket_addr), |s| match s {
                         Ok(s) => AppMessage::Connecting(ConnectingMessage::Client(
-                            ClientConnectingMessage::Connected(Arc::new(s)),
+                            ClientConnectingMessage::Connected(Arc::new(Mutex::new(s))),
                         )),
                         Err(e) => AppMessage::Connecting(ConnectingMessage::Client(
                             ClientConnectingMessage::ConnectionFailed(e.to_string()),
@@ -140,7 +143,9 @@ impl Gomoku {
                 ));
                 let task = async move { listener.accept().await };
                 AppCommand::perform(task, |result| match result {
-                    Ok((stream, _)) => ServerConnectingMessage::Connected(Arc::new(stream)).into(),
+                    Ok((stream, _)) => {
+                        ServerConnectingMessage::Connected(Arc::new(Mutex::new(stream))).into()
+                    }
                     Err(_) => unimplemented!(),
                 })
             }

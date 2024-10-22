@@ -7,7 +7,7 @@ use iced::{
     },
 };
 
-use std::net::SocketAddr;
+use std::{borrow::BorrowMut, net::SocketAddr};
 
 use crate::{
     game_objects::piece::Color,
@@ -92,7 +92,7 @@ impl Scene for ClientConnectingScene {
                     return SceneUpdateResult::SceneSwitch(
                         SceneType::Connecting(Role::Client),
                         SceneType::Game,
-                        Box::new(GameScene::new(stream, Color::White)),
+                        Box::new(GameScene::new(stream.clone(), Color::White)),
                         AppCommand::none(),
                     )
                 }
